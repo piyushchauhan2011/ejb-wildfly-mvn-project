@@ -1,0 +1,42 @@
+## WildFly CLI: Elytron jdbc-realm + security domain for Lesson 8.
+## The tables `sec_users` and `sec_user_roles` are created by Flyway in Lesson 8.
+
+if (outcome != success) of /subsystem=elytron/jdbc-realm=BankingJdbcRealm:read-resource
+    /subsystem=elytron/jdbc-realm=BankingJdbcRealm:add( \
+        principal-query=[ \
+            { \
+                sql="SELECT password FROM sec_users WHERE username = ?", \
+                data-source=BankingDS, \
+                clear-password-mapper={ password-index=1 } \
+            }, \
+            { \
+                sql="SELECT role FROM sec_user_roles WHERE username = ?", \
+                data-source=BankingDS, \
+                attribute-mapping=[ { index=1, to=groups } ] \
+            } \
+        ])
+end-if
+
+if (outcome != success) of /subsystem=elytron/security-domain=BankingDomain:read-resource
+    /subsystem=elytron/security-domain=BankingDomain:add( \
+        default-realm=BankingJdbcRealm, \
+        permission-mapper=default-permission-mapper, \
+        realms=[{ realm=BankingJdbcRealm, role-decoder=groups-to-roles }])
+end-if
+
+if (outcome != success) of /subsystem=elytron/http-authentication-factory=banking-http-auth:read-resource
+    /subsystem=elytron/http-authentication-factory=banking-http-auth:add( \
+        security-domain=BankingDomain, \
+        http-server-mechanism-factory=global, \
+        mechanism-configurations=[ \
+            { mechanism-name=FORM }, \
+            { mechanism-name=BASIC, mechanism-realm-configurations=[{ realm-name=BankingRealm }] } \
+        ])
+end-if
+
+if (outcome != success) of /subsystem=elytron/application-security-domain=banking-app-sec:read-resource
+    /subsystem=undertow/application-security-domain=banking-app-sec:add( \
+        security-domain=BankingDomain)
+    /subsystem=ejb3/application-security-domain=banking-app-sec:add( \
+        security-domain=BankingDomain)
+end-if

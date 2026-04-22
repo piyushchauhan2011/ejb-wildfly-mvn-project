@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<arquillian xmlns="http://jboss.org/schema/arquillian">
+    <defaultProtocol type="Servlet 6.0"/>
+    <container qualifier="wildfly" default="true">
+        <configuration>
+            <property name="jbossHome">${project.basedir}/target/server</property>
+            <property name="javaVmArguments">-Xms256m -Xmx1g</property>
+            <property name="serverConfig">standalone.xml</property>
+            <property name="allowConnectingToRunningServer">true</property>
+        </configuration>
+    </container>
+</arquillian>

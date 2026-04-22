@@ -1,0 +1,31 @@
+## WildFly CLI: Artemis JMS queues for Lesson 7.
+## Provisions two queues + a dead letter queue.
+
+if (outcome != success) of /subsystem=messaging-activemq/server=default/jms-queue=TransfersRequested:read-resource
+    /subsystem=messaging-activemq/server=default/jms-queue=TransfersRequested:add( \
+        entries=["java:/jms/queue/TransfersRequested", "java:jboss/exported/jms/queue/TransfersRequested"], \
+        durable=true)
+end-if
+
+if (outcome != success) of /subsystem=messaging-activemq/server=default/jms-queue=TransfersCompleted:read-resource
+    /subsystem=messaging-activemq/server=default/jms-queue=TransfersCompleted:add( \
+        entries=["java:/jms/queue/TransfersCompleted", "java:jboss/exported/jms/queue/TransfersCompleted"], \
+        durable=true)
+end-if
+
+if (outcome != success) of /subsystem=messaging-activemq/server=default/jms-queue=TransfersDLQ:read-resource
+    /subsystem=messaging-activemq/server=default/jms-queue=TransfersDLQ:add( \
+        entries=["java:/jms/queue/TransfersDLQ"], \
+        durable=true)
+end-if
+
+## Redelivery / DLQ address settings for TransfersRequested:
+##   max-delivery-attempts=3, then route to TransfersDLQ, exponential backoff.
+if (outcome != success) of /subsystem=messaging-activemq/server=default/address-setting=jms.queue.TransfersRequested:read-resource
+    /subsystem=messaging-activemq/server=default/address-setting=jms.queue.TransfersRequested:add( \
+        dead-letter-address=jms.queue.TransfersDLQ, \
+        max-delivery-attempts=3, \
+        redelivery-delay=1000, \
+        redelivery-multiplier=2.0, \
+        max-redelivery-delay=30000)
+end-if

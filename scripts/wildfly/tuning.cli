@@ -1,0 +1,34 @@
+#
+# Production-ish tuning baseline. Tune the numbers to your hardware and traffic.
+#
+
+# --- EJB pool sizing -------------------------------------------------------
+# strict-max-pool "slsb-strict-max-pool" controls Stateless EJB concurrency.
+# The value bounds how many concurrent invocations each bean can service.
+# As a first approximation: max-pool-size >= peak concurrent HTTP threads that
+# land on a Stateless EJB. Lower -> queuing. Higher -> more GC / DB pressure.
+/subsystem=ejb3/strict-max-bean-instance-pool=slsb-strict-max-pool:write-attribute(name=max-pool-size, value=64)
+/subsystem=ejb3/strict-max-bean-instance-pool=mdb-strict-max-pool:write-attribute(name=max-pool-size, value=30)
+
+# --- Datasource pool sizing -----------------------------------------------
+# Keep max-pool-size aligned with DB's max_connections budget divided across
+# nodes. Under-sized pools are the #1 cause of "p99 exploding" in banking apps.
+if (outcome != success) of /subsystem=datasources/data-source=BankingDS:read-resource
+    echo "BankingDS not provisioned; skipping sizing"
+else
+    /subsystem=datasources/data-source=BankingDS:write-attribute(name=max-pool-size, value=50)
+    /subsystem=datasources/data-source=BankingDS:write-attribute(name=min-pool-size, value=10)
+    /subsystem=datasources/data-source=BankingDS:write-attribute(name=blocking-timeout-wait-millis, value=5000)
+    /subsystem=datasources/data-source=BankingDS:write-attribute(name=idle-timeout-minutes, value=15)
+end-if
+
+# --- Remoting / Undertow worker -----------------------------------------
+# io-threads ~= CPU cores; task-max-threads is the upper-bound work queue.
+if (outcome == success) of /subsystem=io/worker=default:read-resource
+    /subsystem=io/worker=default:write-attribute(name=task-max-threads, value=64)
+end-if
+
+# --- HTTP listener keep-alive ------------------------------------------
+if (outcome == success) of /subsystem=undertow/server=default-server/http-listener=default:read-resource
+    /subsystem=undertow/server=default-server/http-listener=default:write-attribute(name=max-connections, value=2000)
+end-if

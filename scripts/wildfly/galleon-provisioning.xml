@@ -1,0 +1,39 @@
+<?xml version="1.0" ?>
+<!--
+  Shared Galleon provisioning config for lessons that need Postgres, EJB,
+  JPA, JMS, Elytron, and MicroProfile.
+
+  Lessons that only need a subset can either reference a smaller layer set
+  directly in their wildfly-maven-plugin config, or copy/pare this file down.
+-->
+<installation xmlns="urn:jboss:galleon:provisioning:3.0">
+    <feature-pack location="wildfly@maven(org.jboss.universe:community-universe)">
+        <default-configs inherit="false"/>
+        <packages inherit="false"/>
+    </feature-pack>
+    <feature-pack location="org.wildfly:wildfly-datasources-galleon-pack:9.2.0.Final">
+        <default-configs inherit="false"/>
+        <packages inherit="false"/>
+    </feature-pack>
+
+    <config model="standalone" name="standalone.xml">
+        <layers>
+            <!-- baseline server -->
+            <include name="cloud-server"/>
+            <!-- EJB + JPA + JMS + Security + Observability -->
+            <include name="ejb"/>
+            <include name="ejb-local"/>
+            <include name="jpa"/>
+            <include name="messaging-activemq"/>
+            <include name="elytron"/>
+            <include name="observability"/>
+            <!-- Postgres JDBC driver module (from wildfly-datasources-galleon-pack) -->
+            <include name="postgresql-driver"/>
+        </layers>
+    </config>
+
+    <options>
+        <option name="optional-packages" value="passive+"/>
+        <option name="jboss-fork-embedded" value="true"/>
+    </options>
+</installation>

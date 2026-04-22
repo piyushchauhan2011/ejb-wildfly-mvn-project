@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.ejblab</groupId>
+        <artifactId>banking-lesson-09-remote-ejb</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>banking-lesson-09-remote-ejb-server</artifactId>
+    <packaging>war</packaging>
+    <name>Lesson 09 - Remote EJB Server</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.ejblab</groupId>
+            <artifactId>banking-lesson-09-remote-ejb-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ejblab</groupId>
+            <artifactId>banking-domain</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency><groupId>org.flywaydb</groupId><artifactId>flyway-core</artifactId></dependency>
+        <dependency><groupId>org.flywaydb</groupId><artifactId>flyway-database-postgresql</artifactId></dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <configuration>
+                    <feature-packs>
+                        <feature-pack><location>wildfly@maven(org.jboss.universe:community-universe)#${version.wildfly}</location></feature-pack>
+                        <feature-pack><location>org.wildfly:wildfly-datasources-galleon-pack:9.2.0.Final</location></feature-pack>
+                    </feature-packs>
+                    <layers>
+                        <layer>cloud-server</layer>
+                        <layer>ejb</layer>
+                        <layer>ejb-http-invoker</layer>
+                        <layer>jpa</layer>
+                        <layer>elytron</layer>
+                        <layer>postgresql-driver</layer>
+                    </layers>
+                    <packaging-scripts>
+                        <packaging-script>
+                            <scripts>
+                                <script>${project.parent.parent.basedir}/scripts/wildfly/datasource.cli</script>
+                            </scripts>
+                        </packaging-script>
+                    </packaging-scripts>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

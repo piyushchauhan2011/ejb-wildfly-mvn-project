@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="https://jakarta.ee/xml/ns/jakartaee"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                           https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd"
+       bean-discovery-mode="annotated"
+       version="4.0">
+
+    <!--
+      Interceptors activated here run in the order they appear, UNLESS they
+      declare @Priority, in which case @Priority wins (lower = earlier).
+      Annotating @Priority is the modern, portable way.
+
+      You still need to list the interceptor classes here for CDI-bound
+      interceptors to be ENABLED. (@Priority-annotated interceptors are
+      enabled automatically in CDI 2.0+; keeping the list here for clarity.)
+    -->
+    <interceptors>
+        <class>org.ejblab.banking.l05.AuditInterceptor</class>
+        <class>org.ejblab.banking.l05.TimedInterceptor</class>
+    </interceptors>
+</beans>

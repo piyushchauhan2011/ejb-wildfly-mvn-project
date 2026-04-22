@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
+                                 https://jakarta.ee/xml/ns/persistence/persistence_3_1.xsd"
+             version="3.1">
+
+    <persistence-unit name="bankingPU" transaction-type="JTA">
+        <jta-data-source>java:jboss/datasources/BankingDS</jta-data-source>
+        <class>org.ejblab.banking.domain.Customer</class>
+        <class>org.ejblab.banking.domain.Account</class>
+        <class>org.ejblab.banking.domain.Transfer</class>
+        <class>org.ejblab.banking.domain.LedgerEntry</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="hibernate.jdbc.batch_size" value="50"/>
+        </properties>
+    </persistence-unit>
+</persistence>

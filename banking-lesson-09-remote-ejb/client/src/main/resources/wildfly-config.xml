@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  File-based alternative to programmatic JNDI configuration. Drop this on the
+  classpath (which it is, by default) and remove the env properties from
+  RemoteClient.java. Two named connections demonstrate failover: the client
+  tries "primary" first, then "secondary" if the primary cluster node is down.
+-->
+<configuration>
+    <authentication-client xmlns="urn:elytron:client:1.7">
+        <authentication-rules>
+            <rule use-configuration="banking-user"/>
+        </authentication-rules>
+        <authentication-configurations>
+            <configuration name="banking-user">
+                <sasl-mechanism-selector selector="DIGEST-MD5 PLAIN"/>
+                <set-user-name name="alice"/>
+                <credentials>
+                    <clear-password password="alice123"/>
+                </credentials>
+            </configuration>
+        </authentication-configurations>
+    </authentication-client>
+
+    <jboss-ejb-client xmlns="urn:jboss:wildfly-client-ejb:3.0">
+        <connections>
+            <connection uri="remote+http://localhost:8080"/>
+            <connection uri="remote+http://localhost:8180"/> <!-- optional failover node -->
+        </connections>
+        <invocation-timeout seconds="5"/>
+    </jboss-ejb-client>
+</configuration>

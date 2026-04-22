@@ -1,0 +1,10 @@
+target/
+*.log
+*.iml
+.idea/
+.vscode/
+.DS_Store
+.mvn/wrapper/maven-wrapper.jar
+dependency-reduced-pom.xml
+standalone/
+provisioned/

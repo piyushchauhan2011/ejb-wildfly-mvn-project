@@ -1,0 +1,43 @@
+## WildFly CLI: Postgres JTA + XA datasources for the banking lab.
+## Assumes the postgresql JDBC driver has already been installed as a module
+## (we use the `postgresql-datasource` Galleon layer from `wildfly-datasources-galleon-pack`).
+##
+## Runs offline via `wildfly-maven-plugin` <scripts> at provisioning time
+## (embed-server is implicit in offline CLI sessions).
+## Idempotent: guarded by `if (outcome != success)` reads so re-runs are safe.
+
+## ---- JTA datasource (JNDI: java:jboss/datasources/BankingDS) ----
+if (outcome != success) of /subsystem=datasources/data-source=BankingDS:read-resource
+    /subsystem=datasources/data-source=BankingDS:add( \
+        jndi-name=java:jboss/datasources/BankingDS, \
+        driver-name=postgresql, \
+        connection-url="jdbc:postgresql://${env.BANKING_PG_HOST:localhost}:${env.BANKING_PG_PORT:5432}/${env.BANKING_PG_DB:banking}", \
+        user-name=${env.BANKING_PG_USER:banking}, \
+        password=${env.BANKING_PG_PASSWORD:banking}, \
+        jta=true, \
+        use-ccm=true, \
+        min-pool-size=2, \
+        max-pool-size=20, \
+        blocking-timeout-wait-millis=5000, \
+        check-valid-connection-sql="SELECT 1", \
+        background-validation=false, \
+        validate-on-match=true, \
+        enabled=true)
+end-if
+
+## ---- XA datasource (used from Lesson 7 onward for JMS + JDBC) ----
+if (outcome != success) of /subsystem=datasources/xa-data-source=BankingXADS:read-resource
+    /subsystem=datasources/xa-data-source=BankingXADS:add( \
+        jndi-name=java:jboss/datasources/BankingXADS, \
+        driver-name=postgresql, \
+        user-name=${env.BANKING_PG_USER:banking}, \
+        password=${env.BANKING_PG_PASSWORD:banking}, \
+        xa-datasource-properties=[ \
+            {name=ServerName,value=${env.BANKING_PG_HOST:localhost}}, \
+            {name=PortNumber,value=${env.BANKING_PG_PORT:5432}}, \
+            {name=DatabaseName,value=${env.BANKING_PG_DB:banking}} \
+        ], \
+        min-pool-size=2, \
+        max-pool-size=20, \
+        enabled=true)
+end-if
