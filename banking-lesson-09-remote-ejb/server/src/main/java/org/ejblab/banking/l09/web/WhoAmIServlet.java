@@ -1,6 +1,6 @@
 package org.ejblab.banking.l09.web;
 
-import jakarta.inject.Inject;
+import jakarta.ejb.EJB;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +16,7 @@ import java.io.IOException;
  */
 @WebServlet("/accounts")
 public class WhoAmIServlet extends HttpServlet {
-    @Inject AccountQuery q;
+    @EJB AccountQuery q;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {

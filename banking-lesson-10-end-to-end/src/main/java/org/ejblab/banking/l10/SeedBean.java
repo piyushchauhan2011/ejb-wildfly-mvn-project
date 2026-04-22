@@ -34,18 +34,7 @@ public class SeedBean {
         customer.setEmail("ethan.e2e@example.com");
         em.persist(customer);
 
-        Account a = new Account();
-        a.setAccountNumber("E2E-001");
-        a.setCustomer(customer);
-        a.setType(AccountType.CHECKING);
-        a.setBalance(new BigDecimal("1000.00"));
-        em.persist(a);
-
-        Account b = new Account();
-        b.setAccountNumber("E2E-002");
-        b.setCustomer(customer);
-        b.setType(AccountType.SAVINGS);
-        b.setBalance(new BigDecimal("500.00"));
-        em.persist(b);
+        em.persist(new Account("E2E-001", customer, AccountType.CHECKING, new BigDecimal("1000.00")));
+        em.persist(new Account("E2E-002", customer, AccountType.SAVINGS, new BigDecimal("500.00")));
     }
 }

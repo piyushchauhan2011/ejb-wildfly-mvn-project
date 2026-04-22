@@ -1,15 +1,15 @@
 package org.ejblab.banking.l12;
 
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import jakarta.ejb.Stateless;
-
-import org.eclipse.microprofile.metrics.annotation.Counted;
-import org.eclipse.microprofile.metrics.annotation.Timed;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * Stateless bean instrumented with MicroProfile Metrics.
+ * Stateless bean instrumented with Micrometer — the metrics backend WildFly
+ * ships with since 28+, replacing the older MicroProfile Metrics subsystem.
  *
  * <ul>
  *   <li>{@link Counted} bumps a counter every call — available at
@@ -17,15 +17,17 @@ import java.math.RoundingMode;
  *   <li>{@link Timed} captures p50/p95/p99 latencies.</li>
  * </ul>
  *
- * <p>All metric names include the application's {@code @ApplicationScoped}
- * bean context. Prometheus scrape: {@code /metrics} returns OpenMetrics text.
+ * <p>WildFly's {@code micrometer} subsystem auto-discovers these annotations
+ * on EJB/CDI beans when the {@code micrometer} Galleon layer is provisioned.
+ * Prometheus scrape path depends on the configured registry (by default
+ * OTLP, but can be switched to Prometheus via CLI).
  */
 @Stateless
 public class MeteredCalculator {
 
-    @Counted(name = "banking_interest_calc_total",
+    @Counted(value = "banking_interest_calc_total",
              description = "Total interest calculations performed")
-    @Timed(name = "banking_interest_calc_duration",
+    @Timed(value = "banking_interest_calc_duration",
            description = "Interest calculation duration")
     public BigDecimal accrue(BigDecimal balance, BigDecimal annualRate, int days) {
         BigDecimal daily = annualRate.divide(new BigDecimal("365"), 10, RoundingMode.HALF_UP);

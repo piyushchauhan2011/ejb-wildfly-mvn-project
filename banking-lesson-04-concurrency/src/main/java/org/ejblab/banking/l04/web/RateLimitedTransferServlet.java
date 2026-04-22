@@ -31,7 +31,7 @@ public class RateLimitedTransferServlet extends HttpServlet {
         if (key == null) key = req.getRemoteAddr();
 
         if (!limiter.tryAcquire(key)) {
-            resp.setStatus(HttpServletResponse.SC_TOO_MANY_REQUESTS);
+            resp.setStatus(429); // Too Many Requests — no constant in jakarta.servlet
             resp.getWriter().write("rate limit: try again soon\n");
             return;
         }

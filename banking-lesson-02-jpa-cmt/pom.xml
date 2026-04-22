@@ -70,7 +70,7 @@
                             <location>wildfly@maven(org.jboss.universe:community-universe)#${version.wildfly}</location>
                         </feature-pack>
                         <feature-pack>
-                            <location>org.wildfly:wildfly-datasources-galleon-pack:9.2.0.Final</location>
+                            <location>org.wildfly:wildfly-datasources-galleon-pack:${version.wildfly.datasources}</location>
                         </feature-pack>
                     </feature-packs>
                     <layers>
@@ -88,17 +88,6 @@
                     </packaging-scripts>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <skipITs>${skipITs}</skipITs>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <skipITs>true</skipITs>
-    </properties>
 </project>

@@ -40,12 +40,12 @@ import java.util.logging.Logger;
 @MessageDriven(name = "TransferRequestMDB",
     activationConfig = {
         @ActivationConfigProperty(propertyName = "destinationLookup",
-                value = "java:/jms/queue/TransfersRequested"),
+                propertyValue = "java:/jms/queue/TransfersRequested"),
         @ActivationConfigProperty(propertyName = "destinationType",
-                value = "jakarta.jms.Queue"),
+                propertyValue = "jakarta.jms.Queue"),
         @ActivationConfigProperty(propertyName = "acknowledgeMode",
-                value = "Auto-acknowledge"),
-        @ActivationConfigProperty(propertyName = "maxSession", value = "5")
+                propertyValue = "Auto-acknowledge"),
+        @ActivationConfigProperty(propertyName = "maxSession", propertyValue = "5")
     })
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class TransferRequestMDB implements MessageListener {

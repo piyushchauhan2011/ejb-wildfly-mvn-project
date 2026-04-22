@@ -22,9 +22,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.microprofile.metrics</groupId>
-            <artifactId>microprofile-metrics-api</artifactId>
-            <version>5.1.2</version>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-core</artifactId>
+            <version>1.12.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency><groupId>org.flywaydb</groupId><artifactId>flyway-core</artifactId></dependency>
@@ -45,7 +45,7 @@
                 <configuration>
                     <feature-packs>
                         <feature-pack><location>wildfly@maven(org.jboss.universe:community-universe)#${version.wildfly}</location></feature-pack>
-                        <feature-pack><location>org.wildfly:wildfly-datasources-galleon-pack:9.2.0.Final</location></feature-pack>
+                        <feature-pack><location>org.wildfly:wildfly-datasources-galleon-pack:${version.wildfly.datasources}</location></feature-pack>
                     </feature-packs>
                     <layers>
                         <layer>cloud-server</layer>
@@ -54,7 +54,7 @@
                         <layer>elytron</layer>
                         <layer>observability</layer>
                         <layer>microprofile-health</layer>
-                        <layer>microprofile-metrics</layer>
+                        <layer>micrometer</layer>
                         <layer>postgresql-driver</layer>
                     </layers>
                     <packaging-scripts>
@@ -69,5 +69,4 @@
             </plugin>
         </plugins>
     </build>
-    <properties><skipITs>true</skipITs></properties>
 </project>

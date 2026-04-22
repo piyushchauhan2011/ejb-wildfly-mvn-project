@@ -52,11 +52,12 @@ public class TransferProcessor {
             Account to = em.find(Account.class, t.getToAccount().getId(), LockModeType.PESSIMISTIC_WRITE);
 
             if (from.getBalance().compareTo(req.amount()) < 0) {
-                throw new InsufficientFundsException("insufficient balance");
+                throw new InsufficientFundsException(
+                        from.getAccountNumber(), from.getBalance(), req.amount());
             }
 
-            from.setBalance(from.getBalance().subtract(req.amount()));
-            to.setBalance(to.getBalance().add(req.amount()));
+            from.debit(req.amount());
+            to.credit(req.amount());
 
             em.persist(new LedgerEntry(from, t, LedgerEntry.Direction.DEBIT, req.amount()));
             em.persist(new LedgerEntry(to, t, LedgerEntry.Direction.CREDIT, req.amount()));

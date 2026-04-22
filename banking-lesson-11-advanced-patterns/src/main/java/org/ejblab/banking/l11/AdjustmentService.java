@@ -32,7 +32,7 @@ public class AdjustmentService {
     public BigDecimal adjust(@NotNull String accountNumber, @Valid @NotNull TransferCommand cmd) {
         // Intentionally DO NOT use pessimistic locking — we rely on @Version for
         // optimistic concurrency, and RetryInterceptor to survive collisions.
-        Account a = em.createQuery("from Account a where a.accountNumber = :n", Account.class)
+        Account a = em.createQuery("SELECT a FROM Account a WHERE a.accountNumber = :n", Account.class)
                 .setParameter("n", accountNumber)
                 .getSingleResult();
         a.setBalance(a.getBalance().add(cmd.amount()));

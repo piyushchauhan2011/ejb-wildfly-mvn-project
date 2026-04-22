@@ -43,9 +43,7 @@ public class TimersServlet extends HttpServlet {
                         boolean ok = reminders.cancel(Long.parseLong(req.getParameter("id")));
                         out.write(ok ? "cancelled\n" : "not found\n");
                     }
-                    case "list" -> reminders.listActive().forEach(id -> {
-                        try { out.write("active: " + id + "\n"); } catch (IOException e) {}
-                    });
+                    case "list" -> reminders.listActive().forEach(id -> out.write("active: " + id + "\n"));
                     default -> resp.sendError(400, "unknown action");
                 }
             }

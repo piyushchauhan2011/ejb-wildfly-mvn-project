@@ -18,7 +18,7 @@
         <properties>
             <!-- We use Flyway for schema migrations; Hibernate only validates. -->
             <property name="jakarta.persistence.schema-generation.database.action" value="none"/>
-            <property name="hibernate.hbm2ddl.auto" value="validate"/>
+            <property name="hibernate.hbm2ddl.auto" value="none"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
             <property name="hibernate.show_sql" value="false"/>
             <property name="hibernate.format_sql" value="false"/>

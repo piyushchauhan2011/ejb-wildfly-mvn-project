@@ -9,6 +9,10 @@ services:
       POSTGRES_PASSWORD: banking
     ports:
       - "5432:5432"
+    command:
+      - "postgres"
+      - "-c"
+      - "max_prepared_transactions=32"
     volumes:
       - banking-pg-data:/var/lib/postgresql/data
     healthcheck:

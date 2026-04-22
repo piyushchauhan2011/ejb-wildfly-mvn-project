@@ -41,29 +41,36 @@ class Lesson06IT {
     }
 
     @PersistenceContext(unitName = "bankingPU") EntityManager em;
+    @Inject jakarta.transaction.UserTransaction utx;
     @Inject NightlyInterestBean job;
 
     @Test
-    void runOnce_is_idempotent_on_same_date() {
+    void runOnce_is_idempotent_on_same_date() throws Exception {
         LocalDate today = LocalDate.now();
 
-        // Seed a savings account
+        // Seed inside a user-managed transaction. Arquillian tests don't run
+        // inside an ambient TX, so raw em.persist() would fail with
+        // TransactionRequiredException.
+        utx.begin();
         Customer c = new Customer("Timers Test " + UUID.randomUUID(),
                 "timers-" + UUID.randomUUID() + "@example.com");
-        Account a = new Account("TMR" + UUID.randomUUID().toString().replace("-", "").substring(0, 18),
+        Account a = new Account(
+                "TMR" + UUID.randomUUID().toString().replace("-", "").substring(0, 18),
                 c, AccountType.SAVINGS, new BigDecimal("10000.00"));
-        em.persist(c); em.persist(a); em.flush();
-
-        // Clear prior run row for this date so this test is independent
+        em.persist(c);
+        em.persist(a);
         em.createQuery("DELETE FROM InterestRun r WHERE r.runDate = :d")
                 .setParameter("d", today).executeUpdate();
+        utx.commit();
 
         job.runOnce(today);  // 1st run does work
         job.runOnce(today);  // 2nd run for same date: no-op (idempotent)
 
+        utx.begin();
         Long runs = em.createQuery(
                 "SELECT COUNT(r) FROM InterestRun r WHERE r.runDate = :d", Long.class)
                 .setParameter("d", today).getSingleResult();
+        utx.commit();
         assertEquals(1L, runs);
     }
 }

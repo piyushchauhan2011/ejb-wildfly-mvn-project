@@ -32,8 +32,25 @@ public class AccountRepository {
     @PersistenceContext(unitName = "bankingPU")
     private EntityManager em;
 
+    /**
+     * Saves an account. If the passed owner is detached (came from a
+     * different persistence context), we swap it for a managed reference
+     * via {@link EntityManager#getReference(Class, Object)}. Without this
+     * the cascade on {@code @ManyToOne(cascade=PERSIST)} would try to
+     * persist the already-persistent Customer and throw
+     * {@code EntityExistsException: detached entity passed to persist}.
+     */
     public Account save(Account a) {
-        if (a.getId() == null) em.persist(a); else a = em.merge(a);
+        if (a.getId() == null) {
+            if (a.getOwner() != null && a.getOwner().getId() != null
+                    && !em.contains(a.getOwner())) {
+                a.setOwner(em.getReference(
+                        a.getOwner().getClass(), a.getOwner().getId()));
+            }
+            em.persist(a);
+        } else {
+            a = em.merge(a);
+        }
         return a;
     }
 

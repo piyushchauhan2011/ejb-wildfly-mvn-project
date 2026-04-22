@@ -9,7 +9,7 @@
     <container qualifier="wildfly" default="true">
         <configuration>
             <!-- Provisioned server lives under target/server (see wildfly-maven-plugin). -->
-            <property name="jbossHome">${project.basedir}/target/server</property>
+            <property name="jbossHome">target/server</property>
             <property name="javaVmArguments">-Xms256m -Xmx1g</property>
             <property name="serverConfig">standalone.xml</property>
             <property name="allowConnectingToRunningServer">true</property>

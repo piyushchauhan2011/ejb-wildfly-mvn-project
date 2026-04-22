@@ -53,8 +53,12 @@ class Lesson01IT {
         cart.add("SKU-1");
         cart.add("SKU-2");
         assertEquals(2, cart.size());
+        // checkout() is @Remove: it returns the contents and the container
+        // destroys this SFSB afterwards, so any further call on `cart` would
+        // throw NoSuchEJBException. That's by design for stateful lifecycles.
         var checked = cart.checkout();
         assertEquals(2, checked.size());
-        assertEquals(0, cart.size());
+        assertThrows(jakarta.ejb.NoSuchEJBException.class, cart::size,
+                "SFSB should be gone after @Remove");
     }
 }

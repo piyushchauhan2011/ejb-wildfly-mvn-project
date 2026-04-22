@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS customers (
     full_name VARCHAR(120) NOT NULL,
     email VARCHAR(200) NOT NULL UNIQUE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    version BIGINT
+    version BIGINT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS accounts (
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS accounts (
     type VARCHAR(20) NOT NULL,
     balance NUMERIC(19,2) NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    version BIGINT,
+    version BIGINT NOT NULL DEFAULT 0,
     CONSTRAINT uk_accounts_number UNIQUE (account_number)
 );
 
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS transfers (
     failure_reason VARCHAR(500),
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     completed_at TIMESTAMP,
-    version BIGINT
+    version BIGINT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS ledger_entries (

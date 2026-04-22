@@ -1,9 +1,9 @@
 ## WildFly CLI: Postgres JTA + XA datasources for the banking lab.
-## Assumes the postgresql JDBC driver has already been installed as a module
-## (we use the `postgresql-datasource` Galleon layer from `wildfly-datasources-galleon-pack`).
+## Driver is installed by the `postgresql-driver` Galleon layer (from
+## `wildfly-datasources-galleon-pack`). Runs offline via the
+## wildfly-maven-plugin's <packaging-scripts> at provisioning time;
+## `embed-server` is implicit in offline CLI sessions.
 ##
-## Runs offline via `wildfly-maven-plugin` <scripts> at provisioning time
-## (embed-server is implicit in offline CLI sessions).
 ## Idempotent: guarded by `if (outcome != success)` reads so re-runs are safe.
 
 ## ---- JTA datasource (JNDI: java:jboss/datasources/BankingDS) ----
@@ -26,18 +26,19 @@ if (outcome != success) of /subsystem=datasources/data-source=BankingDS:read-res
 end-if
 
 ## ---- XA datasource (used from Lesson 7 onward for JMS + JDBC) ----
+## Note: xa-datasource-properties are added as child resources, NOT as
+## attributes on the parent :add() call (that's an older API that was
+## removed). Use a separate :add on each property child resource.
 if (outcome != success) of /subsystem=datasources/xa-data-source=BankingXADS:read-resource
     /subsystem=datasources/xa-data-source=BankingXADS:add( \
         jndi-name=java:jboss/datasources/BankingXADS, \
         driver-name=postgresql, \
         user-name=${env.BANKING_PG_USER:banking}, \
         password=${env.BANKING_PG_PASSWORD:banking}, \
-        xa-datasource-properties=[ \
-            {name=ServerName,value=${env.BANKING_PG_HOST:localhost}}, \
-            {name=PortNumber,value=${env.BANKING_PG_PORT:5432}}, \
-            {name=DatabaseName,value=${env.BANKING_PG_DB:banking}} \
-        ], \
         min-pool-size=2, \
         max-pool-size=20, \
         enabled=true)
+    /subsystem=datasources/xa-data-source=BankingXADS/xa-datasource-properties=ServerName:add(value=${env.BANKING_PG_HOST:localhost})
+    /subsystem=datasources/xa-data-source=BankingXADS/xa-datasource-properties=PortNumber:add(value=${env.BANKING_PG_PORT:5432})
+    /subsystem=datasources/xa-data-source=BankingXADS/xa-datasource-properties=DatabaseName:add(value=${env.BANKING_PG_DB:banking})
 end-if

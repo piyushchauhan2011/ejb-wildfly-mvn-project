@@ -9,6 +9,8 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import jakarta.inject.Inject;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(ArquillianExtension.class)
@@ -27,8 +29,10 @@ public class Lesson08IT {
                         .withTransitivity().asFile());
     }
 
+    @Inject TransferFacade facade;
+
     @Test
-    void termsIsPermitAll(TransferFacade facade) {
+    void termsIsPermitAll() {
         assertTrue(facade.terms().contains("terms"));
     }
 }

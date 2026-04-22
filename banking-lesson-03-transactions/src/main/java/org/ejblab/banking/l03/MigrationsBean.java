@@ -11,6 +11,15 @@ import org.flywaydb.core.Flyway;
 
 import javax.sql.DataSource;
 
+/**
+ * Runs Flyway migrations at deploy time.
+ *
+ * <p>This is a teaching lab where every lesson shares the same Postgres
+ * database. To keep each lesson's V1 migration independent of the others
+ * we drop everything in the schema before re-applying migrations.
+ * <strong>Never</strong> do this in production - use ordered Vn migrations,
+ * no clean().
+ */
 @Startup
 @Singleton
 @TransactionManagement(TransactionManagementType.BEAN)
@@ -21,11 +30,13 @@ public class MigrationsBean {
 
     @PostConstruct
     void migrate() {
-        Flyway.configure()
+        Flyway fw = Flyway.configure()
                 .dataSource(dataSource)
+                .cleanDisabled(false)
                 .baselineOnMigrate(true)
                 .locations("classpath:db/migration")
-                .load()
-                .migrate();
+                .load();
+        fw.clean();
+        fw.migrate();
     }
 }

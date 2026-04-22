@@ -14,7 +14,6 @@ import jakarta.persistence.PersistenceContext;
 import org.ejblab.banking.domain.Account;
 import org.ejblab.banking.domain.Transfer;
 import org.ejblab.banking.domain.TransferRequest;
-import org.ejblab.banking.domain.TransferStatus;
 
 /**
  * Stage 1 in the E2E flow. The servlet calls {@code submit(...)} which:
@@ -49,12 +48,9 @@ public class TransferFacade {
         Account from = findByNumber(req.fromAccountNumber());
         Account to = findByNumber(req.toAccountNumber());
 
-        Transfer t = new Transfer();
+        Transfer t = new Transfer(from, to, req.amount());
         t.setClientRequestId(req.clientRequestId());
-        t.setFromAccount(from);
-        t.setToAccount(to);
-        t.setAmount(req.amount());
-        t.setStatus(TransferStatus.PENDING);
+        // status defaults to PENDING on the entity
         em.persist(t);
         em.flush();
 

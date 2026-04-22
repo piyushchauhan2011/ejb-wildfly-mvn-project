@@ -68,17 +68,6 @@
                     </layers>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <skipITs>${skipITs}</skipITs>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <skipITs>true</skipITs>
-    </properties>
 </project>

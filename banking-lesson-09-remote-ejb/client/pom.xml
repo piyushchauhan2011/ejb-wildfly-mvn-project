@@ -13,21 +13,16 @@
     <name>Lesson 09 - Remote EJB Standalone Client</name>
 
     <properties>
+        <!-- Matches the server's WildFly version. -->
         <version.wildfly.client.bom>36.0.0.Final</version.wildfly.client.bom>
     </properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.wildfly</groupId>
-                <artifactId>wildfly-ejb-client-bom</artifactId>
-                <version>${version.wildfly.client.bom}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
+    <!--
+      wildfly-ejb-client-bom is a "shaded" BOM: declared as a normal
+      (type=pom) dependency it transitively pulls every client artifact
+      needed for http-remoting JNDI lookups (wildfly-naming-client,
+      jboss-ejb-client, elytron-client, jboss-marshalling, ...).
+    -->
     <dependencies>
         <dependency>
             <groupId>org.ejblab</groupId>
@@ -37,6 +32,7 @@
         <dependency>
             <groupId>org.wildfly</groupId>
             <artifactId>wildfly-ejb-client-bom</artifactId>
+            <version>${version.wildfly.client.bom}</version>
             <type>pom</type>
         </dependency>
     </dependencies>

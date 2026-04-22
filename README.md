@@ -62,16 +62,52 @@ mvn -q -DskipITs clean install
 
 ### 3. Run any lesson
 
+`wildfly:dev` provisions WildFly, starts it, deploys the lesson as an
+**exploded** webapp, and watches `src/main` for changes. Because an exploded
+deployment and a packaged `.war` file cannot coexist in `target/`, always
+start from a clean target:
+
 ```bash
 cd banking-lesson-01-refresher
-mvn -q wildfly:dev
+mvn -q clean wildfly:dev
 # App at http://localhost:8080/banking-lesson-01-refresher/
+# Ctrl+C to stop; the provisioned server lives in target/server/
 ```
+
+If you only want to boot the server and deploy once (no file watcher):
+
+```bash
+mvn -q clean wildfly:run
+```
+
+> **Always prefix with `clean`** when switching between packaged and
+> dev-mode builds. The packaged `.war` **file** (from `mvn install`/`verify`)
+> and the exploded `.war/` **directory** (from `wildfly:dev`/`wildfly:run`)
+> share the same path in `target/`, so whichever ran last poisons the other:
+>
+> - `… .war/WEB-INF/beans.xml: Not a directory` → leftover packaged file,
+>   run `mvn clean wildfly:dev`.
+> - `… .war isn't a file` → leftover exploded dir, run `mvn clean verify`.
 
 ### 4. Run the Arquillian integration tests for a lesson
 
+ITs run by default on `verify`. Start from a clean target so the packaged
+war can be built (see warning above):
+
 ```bash
-mvn -q -Pit verify
+mvn -q clean verify
+```
+
+Run all lessons' ITs in one shot from the repo root:
+
+```bash
+mvn -q clean verify
+```
+
+To skip ITs during a fast rebuild, pass `-DskipITs`:
+
+```bash
+mvn -q -DskipITs clean install
 ```
 
 ## Conventions
@@ -79,7 +115,7 @@ mvn -q -Pit verify
 - **Package root**: `org.ejblab.banking`
 - **Shared JNDI**: `java:jboss/datasources/BankingDS` (JTA), `java:jboss/datasources/BankingXADS` (XA)
 - **Default JMS queues**: `java:/jms/queue/TransfersRequested`, `TransfersCompleted`, `TransfersDLQ`
-- **Maven profile**: `-Pit` enables Arquillian integration tests (skipped by default to keep `install` fast)
+- **Integration tests**: `mvn verify` runs every lesson's Arquillian IT; pass `-DskipITs` to skip them (e.g. `mvn -DskipITs clean install` for fast local dev)
 
 ## Directory layout
 

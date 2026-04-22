@@ -7,7 +7,12 @@
 # The value bounds how many concurrent invocations each bean can service.
 # As a first approximation: max-pool-size >= peak concurrent HTTP threads that
 # land on a Stateless EJB. Lower -> queuing. Higher -> more GC / DB pressure.
+# NOTE: Newer WildFly versions set derive-size=from-worker-pools by default.
+# max-pool-size cannot be combined with derive-size, so we explicitly
+# unset derive-size first, then set an absolute max-pool-size.
+/subsystem=ejb3/strict-max-bean-instance-pool=slsb-strict-max-pool:undefine-attribute(name=derive-size)
 /subsystem=ejb3/strict-max-bean-instance-pool=slsb-strict-max-pool:write-attribute(name=max-pool-size, value=64)
+/subsystem=ejb3/strict-max-bean-instance-pool=mdb-strict-max-pool:undefine-attribute(name=derive-size)
 /subsystem=ejb3/strict-max-bean-instance-pool=mdb-strict-max-pool:write-attribute(name=max-pool-size, value=30)
 
 # --- Datasource pool sizing -----------------------------------------------

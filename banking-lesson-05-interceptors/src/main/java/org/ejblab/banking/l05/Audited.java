@@ -1,5 +1,6 @@
 package org.ejblab.banking.l05;
 
+import jakarta.enterprise.util.Nonbinding;
 import jakarta.interceptor.InterceptorBinding;
 
 import java.lang.annotation.ElementType;
@@ -26,6 +27,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 public @interface Audited {
-    /** human-readable category; written into the audit record. */
-    String value() default "";
+    /**
+     * Human-readable category; written into the audit record.
+     * {@link Nonbinding} so any value on the target still matches the
+     * interceptor's bare {@code @Audited} binding.
+     */
+    @Nonbinding String value() default "";
 }

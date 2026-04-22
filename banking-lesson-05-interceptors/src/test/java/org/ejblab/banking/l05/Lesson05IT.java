@@ -41,7 +41,12 @@ class Lesson05IT {
 
     @Test
     void audit_captures_thrown_exceptions() {
-        assertThrows(IllegalStateException.class, quotes::quoteBroken);
+        // Runtime exceptions from an EJB method are wrapped in EJBException
+        // unless the exception class is @ApplicationException. The interceptor
+        // still sees and records the original cause.
+        jakarta.ejb.EJBException ejbEx =
+                assertThrows(jakarta.ejb.EJBException.class, quotes::quoteBroken);
+        assertInstanceOf(IllegalStateException.class, ejbEx.getCausedByException());
         assertEquals(1, trail.all().size());
         assertEquals("ERR", trail.all().get(0).outcome());
         assertNotNull(trail.all().get(0).error());

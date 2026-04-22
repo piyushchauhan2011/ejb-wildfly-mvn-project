@@ -30,7 +30,8 @@ public class TransferServlet extends HttpServlet {
     @Inject TransferFacade facade;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException, jakarta.servlet.ServletException {
         resp.setContentType("text/plain;charset=UTF-8");
         switch (req.getServletPath()) {
             case "/terms" -> resp.getWriter().write(facade.terms());

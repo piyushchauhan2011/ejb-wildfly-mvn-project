@@ -36,5 +36,4 @@
             </plugin>
         </plugins>
     </build>
-    <properties><skipITs>true</skipITs></properties>
 </project>
