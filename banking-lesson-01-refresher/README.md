@@ -26,7 +26,7 @@ flowchart LR
 
 ```bash
 # provision WildFly + deploy + keep running
-mvn -q wildfly:dev
+mvn -q clean wildfly:package wildfly:dev
 
 # then:
 curl 'http://localhost:8080/banking-lesson-01-refresher/greet?name=Ada'

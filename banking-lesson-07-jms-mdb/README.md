@@ -57,7 +57,7 @@ the other rolls back on unique violation.
 
 ```bash
 docker compose -f ../docker/docker-compose.yml up -d postgres
-mvn -q wildfly:dev
+mvn -q clean wildfly:package wildfly:dev
 
 curl -X POST http://localhost:8080/banking-lesson-07-jms-mdb/seed
 

@@ -42,7 +42,7 @@ but the caller never sees them.
 ## Run it
 
 ```bash
-mvn -q wildfly:dev
+mvn -q clean wildfly:package wildfly:dev
 
 # Rate limit demo (5 req/s per key):
 for i in $(seq 1 10); do

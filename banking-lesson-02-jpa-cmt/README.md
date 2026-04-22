@@ -31,7 +31,7 @@ docker compose -f ../docker/docker-compose.yml up -d postgres
 ## Run it
 
 ```bash
-mvn -q wildfly:dev
+mvn -q clean wildfly:package wildfly:dev
 
 # Create a customer + account:
 curl -X POST 'http://localhost:8080/banking-lesson-02-jpa-cmt/accounts?owner=Ada&email=ada@bank.io&balance=250.00'

@@ -77,7 +77,7 @@ fires in HA setups.
 
 ```bash
 docker compose -f ../docker/docker-compose.yml up -d postgres
-mvn -q wildfly:dev
+mvn -q clean wildfly:package wildfly:dev
 
 # Trigger the interest job now (don't wait until 00:15):
 curl -X POST http://localhost:8080/banking-lesson-06-timers/run-interest

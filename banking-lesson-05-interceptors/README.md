@@ -60,7 +60,7 @@ interceptor runs, the TX has already started.
 ## Run it
 
 ```bash
-mvn -q wildfly:dev
+mvn -q clean wildfly:package wildfly:dev
 curl 'http://localhost:8080/banking-lesson-05-interceptors/quote?amount=1000'
 curl 'http://localhost:8080/banking-lesson-05-interceptors/quote/fx?from=USD&to=EUR'
 curl 'http://localhost:8080/banking-lesson-05-interceptors/quote/broken'

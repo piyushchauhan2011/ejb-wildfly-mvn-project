@@ -62,31 +62,38 @@ mvn -q -DskipITs clean install
 
 ### 3. Run any lesson
 
-`wildfly:dev` provisions WildFly, starts it, deploys the lesson as an
-**exploded** webapp, and watches `src/main` for changes. Because an exploded
-deployment and a packaged `.war` file cannot coexist in `target/`, always
-start from a clean target:
+`wildfly:package` provisions WildFly into `target/server/` **and** runs the
+lesson's CLI scripts (e.g. `datasource.cli`, `jms-queues.cli`) to register
+datasources and JMS queues. `wildfly:dev` then starts that pre-provisioned
+server, deploys the lesson as an **exploded** webapp, and watches
+`src/main` for changes. Always chain them, and always prefix with `clean`:
 
 ```bash
 cd banking-lesson-01-refresher
-mvn -q clean wildfly:dev
+mvn -q clean wildfly:package wildfly:dev
 # App at http://localhost:8080/banking-lesson-01-refresher/
 # Ctrl+C to stop; the provisioned server lives in target/server/
 ```
 
-If you only want to boot the server and deploy once (no file watcher):
+Want a one-shot run without the file-change watcher? Swap `wildfly:dev` for
+`wildfly:run`:
 
 ```bash
-mvn -q clean wildfly:run
+mvn -q clean wildfly:package wildfly:run
 ```
 
-> **Always prefix with `clean`** when switching between packaged and
-> dev-mode builds. The packaged `.war` **file** (from `mvn install`/`verify`)
-> and the exploded `.war/` **directory** (from `wildfly:dev`/`wildfly:run`)
-> share the same path in `target/`, so whichever ran last poisons the other:
+> **Why both goals?** `wildfly:dev` on its own does not execute
+> `<packaging-scripts>`, so lessons 02/03/06/07/08/10/11/12 would fail with
+> `Required services that are not installed: …BankingDS` (or a missing JMS
+> queue). Running `wildfly:package` first applies those CLI scripts to
+> `target/server/` and `wildfly:dev` then reuses that server.
+>
+> **Why `clean`?** The packaged `.war` **file** (from `mvn install` /
+> `verify`) and the exploded `.war/` **directory** (from `wildfly:dev` /
+> `wildfly:run`) collide on the same path in `target/`:
 >
 > - `… .war/WEB-INF/beans.xml: Not a directory` → leftover packaged file,
->   run `mvn clean wildfly:dev`.
+>   run `mvn clean wildfly:package wildfly:dev`.
 > - `… .war isn't a file` → leftover exploded dir, run `mvn clean verify`.
 
 ### 4. Run the Arquillian integration tests for a lesson

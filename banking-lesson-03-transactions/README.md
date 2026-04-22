@@ -47,7 +47,7 @@ flowchart TD
 
 ```bash
 docker compose -f ../docker/docker-compose.yml up -d postgres
-mvn -q wildfly:dev
+mvn -q clean wildfly:package wildfly:dev
 
 # seed two accounts at 1000.00 each
 curl -X POST http://localhost:8080/banking-lesson-03-transactions/seed
